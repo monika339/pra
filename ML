@@ -1,3 +1,170 @@
+3
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
+df=pd.read_csv('')
+df.columns=df.columns.str.strip()
+print("Database Info:")
+print(df.info())
+print("\nFirst few rows:")
+print(df.head())
+x=df[['Level']]
+y=df['Salary']
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.2,random_state=42)
+linear_regressor=LinearRegression()
+linear_regressor.fit(x_train,y_train)
+y_pred_linearhb=linear_regressor.predict(x_test)
+mse_linear=mean_squared_error(y_test,y_pred_linear)
+print(f'\nLinear Regression Mean Squared Error:{mse_linear:.2f}')
+plt.scatter(x,y,color='red',label='Actual Data')
+plt.plot(x,linear_regressor.predict(x),color='blue',label='Linear Regression')
+plt.title('Simple Linear Regression')
+plt.xlabel('Position Level')
+plt.ylabel('Salary')
+plt.legend()
+plt.grid(True)
+plt.show()
+poly_features=PolynomialFeatures(degree=4)
+x_poly_train=poly_features.fit_transform(x_train)
+poly_regressor=LinearRegression()
+poly_regressor.fit(x_poly_train,y_train)
+x_poly_test=poly_features.transform(x_test)
+y_pred_poly=poly_regressor.predict(x_poly__test)
+mse_poly=mean_squared_error(y_test,y_pred_poly)
+print(f'\nPolynomial Regression Mean Squared Error:{mse_poly:.2f}')
+x_grid=pd.DataFrame({'Level':np.arange(min(x['Level']),max(x['level']),0.1)})
+x_grid_poly=poly_features.transform(x_grid)
+plt.scatter(x,y,color='red',label='Actual Data')
+plt.plot(x_grid,poly_regressor.predict(x_grid_poly),color='green',label='Polynomial Regression(deg=4)')
+plt.title('Polynomial Regression')
+plt.xlabel('Position Level')
+plt.ylabel('Salary')
+plt.legend()
+plt.grid(True)
+plt.show()
+level_11=pd.DataFrame({'Level':[11]})
+level_12=pd.DataFrame({'Level':[12]})
+salary_level_11_linear=linear_regressor.predict(level_11)[0]
+salary_level_12_linear=linear_regressor.predict(level_12)[0]
+salary_level_11_poly=poly_regressor.predict(poly_features.transform(level_11))[0]
+salary_level_12_poly=poly_regressor.predict(poly_features.transform(level_12))[0]
+print(f'----------------')
+print(f'\nLinear Regression Salary Prediction:')
+print(f'Level 11: ${salary_level_11_linear:.2f}')
+print(f'Level 12: ${salary_level_12_linear:.2f}')
+
+print(f'\nPolynomial Regression Salary Prediction:')
+print(f'Level 11: ${salary_level_11_poly:.2f}')
+print(f'Level 12: ${salary_level_12_poly:.2f}')
+
+print("\nModel Comparison Summary:")
+print(f"Linear Regression MSE :{mse_linear:.2f}")
+print(f"Polynomial Regression MSE:{mse_poly:.2f}")
+if mse_linear<mse_poly:
+    print("Simple Linear Regression is more accurate.")
+else:
+    print("Polynomial Regression is more accurate.")
+                    
+ 4
+
+import pandas as pd
+import numpy as np
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Ridge,Lasso,ElasticNet
+from sklearn.metrics import mean_squared_error
+
+data=pd.read_csv(r'/home/kkw-pgii-pc09/Desktop/mcs-2-8/BostonHousing.csv')
+data=data[['RM','Price']]
+
+data=data.dropna()
+x=data[['RM']]
+y=data['Price']
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.2,random_state=42)
+ridge_model=Ridge(alpha=1.0)
+lasso_model=Ridge(alpha=1.0)
+elastic_net_model=ElasticNet(alpha=1.0)
+
+ridge_model.fit(x_train,y_train)
+lasso_model.fit(x_train,y_train)
+elastic_net_model.fit(x_train,y_train)
+
+ridge_predictions=ridge_model.predict(x_test)
+lasso_predictions=ridge_model.predict(x_test)
+elastic_net_predictions=elastic_net_model.predict(x_test)
+
+ridge_mse=mean_squared_error(y_test,ridge_predictions)
+lasso_mse=mean_squared_error(y_test,lasso_predictions)
+elastic_net_mse=mean_squared_error(y_test,elastic_net_predictions)
+
+print(f'Ridge Regression MSE: {ridge_mse:.2f}')
+print(f'Lasso Regression MSE: {lasso_mse:.2f}')
+print(f'Elastic Net Regression MSE: {elastic_net_mse:.2f}')
+
+rooms=pd.DataFrame({'RM':[5]})
+predicted_price_ridge=ridge_model.predict(rooms)[0]
+predicted_price_lasso=lasso_model.predict(rooms)[0]
+predicted_price_elastic_net=elastic_net_model.predict(rooms)[0]
+
+print(f'\nPredicted Price of a house with 5 rooms:')
+print(f'Ridge Regression : ${predicted_price_ridge}')
+print(f'Lasso Regression : ${predicted_price_lasso}')
+print(f'Elastic Net Regression: ${predicted_price_elastic_neta]7*}')
+
+5
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score,classification_report,confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+file_path='//home/kkw-pgii-pc09/Desktop/mcs-2-8/banknote-authentication.csv'
+column_names=['Variance_WT','Skewness','Curtosis','Entropy','Class']
+data=pd.read_csv(file_path,header=None,names=column_names)
+print(data.head())
+print(data.dtypes)
+
+for col in column_names[:-1]:
+    data[col]=pd.to_numeric(data[col],errors='coerce')
+print(data.isna().sum())
+data=data.dropna()
+x=data.drop('Class',axis=1)
+y=data['Class']
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.3,random_state=42)
+model=DecisionTreeClassifier(random_state=42)
+model.fit(x_train,y_train)
+y_pred=model.predict(x_test)
+accuracy=accuracy_score(y_test,y_pred)
+conf_matrix=confusion_matrix(y_test,y_pred)
+class_report=classification_report(y_test,y_pred)
+
+print(f"Accuracy: {accuracy:.2f}")
+print("Confusion Matrix:")
+print(conf_matrix)
+print("Classification Report:")
+print(class_report)
+
+plt.figure(figsize=(8,6))
+sns.heatmap(conf_matrix,annot=True,fmt='d',cmap='Blues',xticklabels=['Genuine','Forged'],yticklabels=['Genuine','Forged'])
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.title('Confusion Matrix')
+plt.show()
+            
+
+
+
+
+        
+
+
+
 7
 
 import numpy as np
